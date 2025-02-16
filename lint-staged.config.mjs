@@ -1,6 +1,6 @@
 const config = {
-  '!({services}/**/*.ts)': ['prettier --ignore-unknown --write'],
-  '{services}/**/*.ts': ['prettier --ignore-unknown --write', 'eslint --fix'],
+  '*': ['prettier --write --cache --ignore-unknown'],
+  'services/**/*.ts': ['eslint --cache --fix'],
 };
 
 export default config;

@@ -30,8 +30,8 @@
     "clean": "pnpm -r --parallel --stream run clean",
     "build": "pnpm run clean && pnpm -r --parallel --stream run build",
     "dev": "pnpm -r --parallel --stream run dev",
-    "lint": "eslint \"{services}/**/*.ts\" --fix",
-    "prettify": "prettier --ignore-unknown --write ."
+    "lint": "eslint --cache services/**",
+    "prettify": "prettier --cache --ignore-unknown --write ."
   },
   "dependencies": {
     "uuid": "^9.0.0"
