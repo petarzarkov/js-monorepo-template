@@ -1,11 +1,11 @@
 {
-  "name": "emergency-response-platform",
-  "description": "Emergency Response Platform Application",
+  "name": "nestjs-monorepo-template",
+  "description": "NestJS Monorepo Template Repository",
   "keywords": [
-    "emergency",
-    "response",
-    "platform",
-    "Emergency Response Platform"
+    "NestJS",
+    "Monorepo",
+    "Template",
+    "Repository"
   ],
   "author": {
     "name": "Petar Zarkov",
@@ -19,9 +19,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/petarzarkov/emergency-response.git"
+    "url": "https://github.com/petarzarkov/nestjs-template.git"
   },
-  "homepage": "https://github.com/petarzarkov/emergency-response",
+  "homepage": "https://github.com/petarzarkov/nestjs-template",
   "scripts": {
     "prepare": "husky",
     "preinstall": "npx only-allow pnpm",
@@ -31,7 +31,6 @@
     "build": "pnpm run clean && pnpm -r --parallel --stream run build",
     "dev": "pnpm -r --parallel --stream run dev",
     "lint": "eslint \"{services}/**/*.ts\" --fix",
-    "lint:fix": "pnpm -r --parallel --stream run lint --fix",
     "prettify": "prettier --ignore-unknown --write ."
   },
   "dependencies": {

@@ -1,0 +1,21 @@
+{
+  "exclude": ["../../tsconfig.json"],
+  "compilerOptions": {
+    "outDir": "./build",
+    "baseUrl": ".",
+    "paths": {
+      "@db/*": ["./db/*"],
+      "@api/*": ["./app/api/*"],
+      "@const": ["./app/const"],
+      "@repos": ["./app/repos"],
+      "@middlewares/*": ["./app/middlewares/*"],
+      "@modules/*": ["./app/modules/*"],
+      "@utils": ["./app/utils"],
+      "@interceptors/*": ["./app/interceptors/*"],
+      "@decorators/*": ["./app/decorators/*"],
+      "@filters/*": ["./app/filters/*"],
+      "@contracts/*": ["app/contracts/*"]
+    }
+  },
+  "include": ["app", "db"]
+}
