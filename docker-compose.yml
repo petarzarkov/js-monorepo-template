@@ -1,4 +1,3 @@
-version: '3.5'
 services:
   db:
     image: 'postgres:latest'
@@ -21,4 +20,5 @@ services:
 
 networks:
   template:
+    name: template
     driver: bridge

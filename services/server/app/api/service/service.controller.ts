@@ -2,20 +2,27 @@ import { ValidatedConfig } from '@const';
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { DataSource } from 'typeorm';
 
 @ApiTags('service')
 @Controller({
   path: '/service',
 })
 export class ServiceController {
-  constructor(private configService: ConfigService<ValidatedConfig, true>) {}
+  constructor(
+    private configService: ConfigService<ValidatedConfig, true>,
+    private dataSource: DataSource,
+  ) {}
 
   @Get('/health')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Check if service is healthy' })
-  healthCheck() {
+  async healthCheck() {
+    const [{ healthy }] = await this.dataSource.query('SELECT case when 1+1 = 2 then true else false end as healthy');
     return {
-      healthy: true,
+      db: {
+        health: healthy,
+      },
     };
   }
 
