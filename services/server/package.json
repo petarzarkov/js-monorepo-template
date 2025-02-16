@@ -12,7 +12,7 @@
     "type": "git",
     "url": "https://github.com/petarzarkov/nestjs-template.git"
   },
-  "homepage": "https://github.com/petarzarkov/nestjs-template",
+  "homepage": "https://github.com/petarzarkov/nestjs-template/tree/main/services/server",
   "scripts": {
     "clean": "rm -rf build",
     "start": "node build/app/main",

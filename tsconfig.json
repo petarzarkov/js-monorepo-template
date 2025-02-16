@@ -20,9 +20,10 @@
     "alwaysStrict": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "allowJs": false,
+    "checkJs": false,
     "noUnusedParameters": true,
     "noUnusedLocals": true
   },
-  "include": ["services/**/*"],
-  "exclude": ["eslint.config.mjs", "lint-staged.config.mjs", "prettier.config.mjs"]
+  "include": ["services/**/*"]
 }
