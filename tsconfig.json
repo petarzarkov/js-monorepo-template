@@ -1,0 +1,28 @@
+{
+  "extends": ["@tsconfig/strictest/tsconfig", "@tsconfig/node22/tsconfig"],
+  "compilerOptions": {
+    "strictPropertyInitialization": false,
+    "module": "commonjs",
+    "target": "ESNext",
+    "lib": ["ES6"],
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": false,
+    "declaration": false,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true,
+    "alwaysStrict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noUnusedParameters": true,
+    "noUnusedLocals": true
+  },
+  "include": ["services/**/*"],
+  "exclude": ["eslint.config.mjs", "lint-staged.config.mjs", "prettier.config.mjs"]
+}

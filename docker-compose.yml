@@ -1,0 +1,24 @@
+version: '3.5'
+services:
+  db:
+    image: 'postgres:latest'
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_PASS}
+      PGPASSWORD: ${DB_PASS}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_PORT: ${DB_PORT}
+      PGPORT: ${DB_PORT}
+    networks:
+      - template
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+networks:
+  template:
+    driver: bridge
