@@ -19,9 +19,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/petarzarkov/nestjs-template.git"
+    "url": "https://github.com/petarzarkov/js-monorepo-template.git"
   },
-  "homepage": "https://github.com/petarzarkov/nestjs-template",
+  "homepage": "https://github.com/petarzarkov/js-monorepo-template",
   "scripts": {
     "prepare": "husky",
     "preinstall": "npx only-allow pnpm",

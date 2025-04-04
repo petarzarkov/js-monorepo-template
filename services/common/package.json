@@ -12,9 +12,9 @@
   "module": "build/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/petarzarkov/nestjs-template.git"
+    "url": "https://github.com/petarzarkov/js-monorepo-template.git"
   },
-  "homepage": "https://github.com/petarzarkov/nestjs-template/tree/main/services/common",
+  "homepage": "https://github.com/petarzarkov/js-monorepo-template/tree/main/services/common",
   "scripts": {
     "clean": "rm -rf build",
     "prebuild": "npm run clean",
