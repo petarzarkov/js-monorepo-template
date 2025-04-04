@@ -1,16 +1,15 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import type { HookHandlerDoneFunction } from 'fastify';
+import type { FastifyRequest, HookHandlerDoneFunction } from 'fastify';
 import { v4 } from 'uuid';
 import { ServerResponse } from 'http';
-import { REQUEST_ID_HEADER_KEY } from '@const';
-import { BaseRequest } from '@api/BaseRequest';
+import { REQUEST_ID_HEADER_KEY } from '../const';
 
 @Injectable()
 export class RequestIdMiddleware implements NestMiddleware {
-  use(req: BaseRequest, res: ServerResponse, next: HookHandlerDoneFunction) {
+  use(req: FastifyRequest, res: ServerResponse, next: HookHandlerDoneFunction) {
     const requestId = req?.id || v4();
-    req.headers[REQUEST_ID_HEADER_KEY] = requestId;
 
+    req.headers[REQUEST_ID_HEADER_KEY] = req.headers[REQUEST_ID_HEADER_KEY] || requestId;
     res.setHeader(REQUEST_ID_HEADER_KEY, requestId);
 
     next();

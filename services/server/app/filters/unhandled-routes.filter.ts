@@ -1,4 +1,4 @@
-import { REQUEST_ID_HEADER_KEY } from '@const';
+import { REQUEST_ID_HEADER_KEY } from '../const';
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
@@ -10,6 +10,7 @@ export class UnhandledRoutes implements ExceptionFilter {
     const request = host.switchToHttp().getRequest<FastifyRequest>();
     const response = host.switchToHttp().getResponse<FastifyReply>();
 
+    // We want to log errors not instances of the nestjs HttpException to tell us what we are not handling properly
     if (exception.getStatus() === 404 && !(exception instanceof HttpException)) {
       const path = request.originalUrl;
       this.logger.warn({

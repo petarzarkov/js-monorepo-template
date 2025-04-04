@@ -16,7 +16,8 @@
   "scripts": {
     "start": "vite --host",
     "dev": "npm run start",
-    "build": "vite build --mode production"
+    "build": "vite build --mode production",
+    "test": "echo tests to be implemented"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",

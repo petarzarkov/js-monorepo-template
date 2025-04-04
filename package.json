@@ -27,9 +27,9 @@
     "preinstall": "npx only-allow pnpm",
     "format": "prettier --write --cache .",
     "typecheck": "pnpm -r --parallel tsc --noEmit",
-    "clean": "pnpm -r --parallel --stream run clean",
-    "build": "pnpm run clean && pnpm -r --parallel --stream run build",
+    "build": "pnpm -r --parallel --stream run build",
     "dev": "pnpm -r --parallel --stream run dev",
+    "test": "pnpm -r --parallel --stream run test",
     "lint": "eslint --cache services/**",
     "pretty": "prettier --cache --ignore-unknown --write ."
   },
@@ -37,6 +37,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.20.0",
     "@tsconfig/node22": "^22.0.0",
     "@tsconfig/strictest": "^2.0.5",
     "@types/eslint-config-prettier": "^6.11.3",
@@ -44,7 +45,6 @@
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
-    "@eslint/js": "^9.20.0",
     "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.0.1",
     "husky": "^9.1.7",
@@ -61,7 +61,12 @@
     "onlyBuiltDependencies": [
       "@nestjs/core",
       "@scarf/scarf",
-      "esbuild"
+      "@swc/core",
+      "bcrypt",
+      "cpu-features",
+      "esbuild",
+      "protobufjs",
+      "ssh2"
     ]
   }
 }

@@ -1,4 +1,4 @@
-import { ValidatedConfig } from '@const';
+import { ValidatedConfig } from '../../const';
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';

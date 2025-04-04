@@ -11,6 +11,9 @@ export class EnvVars {
   SERVICE_PORT: number;
 
   @IsString()
+  JWT_SECRET: string;
+
+  @IsString()
   DB_NAME: string;
 
   @IsString()
@@ -36,6 +39,10 @@ export const validateConfig = (config: Record<string, unknown>) => {
 
   return {
     env: validatedConfig.APP_ENV,
+    auth: {
+      secret: validatedConfig.JWT_SECRET,
+      expiresIn: '24h',
+    },
     isDev: !validatedConfig.APP_ENV || validatedConfig.APP_ENV === 'dev',
     app: {
       port: validatedConfig.SERVICE_PORT,

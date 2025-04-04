@@ -1,11 +1,12 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ValidatedConfig, validateConfig } from '@const';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RequestIdMiddleware } from '@middlewares/request-id.middleware';
-import { HttpMiddleware } from '@middlewares/http.middleware';
-import { ServiceModule } from '@api/service/service.module';
+import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown } from '@nestjs/common';
+import { ValidatedConfig, validateConfig } from './const';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { resolve } from 'node:path';
+import { AuthModule } from './modules/auth/auth.module';
+import { HttpLoggerModule } from './modules/http-logger/http-logger.module';
+import { ServiceModule } from './api/service/service.module';
+import { RequestIdMiddleware } from './middlewares/request-id.middleware';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { resolve } from 'node:path';
       validate: validateConfig,
       isGlobal: true,
     }),
+    HttpLoggerModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService<ValidatedConfig, true>) => {
@@ -26,21 +28,25 @@ import { resolve } from 'node:path';
           username: dbConfig.username,
           password: dbConfig.password,
           database: dbConfig.name,
-          entities: [resolve(__dirname, '../db/entities/**/*.entity{.ts,.js}')],
-          migrations: [resolve(__dirname, '../db/migrations/**/*{.ts,.js}')],
+          entities: [resolve(__dirname, './db/entities/**/*.entity{.ts,.js}')],
+          migrations: [resolve(__dirname, './db/migrations/**/*{.ts,.js}')],
           migrationsRun: true,
           autoLoadEntities: true,
           logging: isDev,
-          synchronize: isDev,
         };
       },
       inject: [ConfigService],
     }),
     ServiceModule,
+    AuthModule,
   ],
 })
-export class AppModule implements NestModule {
+export class AppModule implements NestModule, OnApplicationShutdown {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestIdMiddleware, HttpMiddleware).forRoutes('*');
+    consumer.apply(RequestIdMiddleware).forRoutes('*');
+  }
+
+  onApplicationShutdown(signal?: string) {
+    console.log('Received shutdown signal', signal);
   }
 }

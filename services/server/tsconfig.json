@@ -1,21 +1,9 @@
 {
-  "extends": ["../../tsconfig.json"],
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./build",
-    "baseUrl": ".",
-    "paths": {
-      "@db/*": ["./db/*"],
-      "@api/*": ["./app/api/*"],
-      "@const": ["./app/const"],
-      "@repos": ["./app/repos"],
-      "@middlewares/*": ["./app/middlewares/*"],
-      "@modules/*": ["./app/modules/*"],
-      "@utils": ["./app/utils"],
-      "@interceptors/*": ["./app/interceptors/*"],
-      "@decorators/*": ["./app/decorators/*"],
-      "@filters/*": ["./app/filters/*"],
-      "@contracts/*": ["app/contracts/*"]
-    }
+    "lib": ["ES6", "DOM"],
+    "baseUrl": "."
   },
-  "include": ["app", "db"]
+  "include": ["app"]
 }
