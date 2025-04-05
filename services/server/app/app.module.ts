@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { HttpLoggerModule } from './modules/http-logger/http-logger.module';
 import { ServiceModule } from './api/service/service.module';
 import { RequestIdMiddleware } from './middlewares/request-id.middleware';
+import { EventsModule } from './modules/events/events.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { RequestIdMiddleware } from './middlewares/request-id.middleware';
     }),
     ServiceModule,
     AuthModule,
+    EventsModule,
   ],
 })
 export class AppModule implements NestModule, OnApplicationShutdown {

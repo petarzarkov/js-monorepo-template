@@ -15,28 +15,34 @@
   "homepage": "https://github.com/petarzarkov/js-monorepo-template/tree/main/services/web",
   "scripts": {
     "start": "vite --host",
-    "dev": "npm run start",
+    "dev": "vite",
     "build": "vite build --mode production",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview",
     "test": "echo tests to be implemented"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.2.4",
-    "@chakra-ui/react": "^3.8.0",
+    "@chakra-ui/react": "^2.2.4",
+    "socket.io-client": "^4.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.1.5",
-    "react-redux": "^9.2.0",
-    "react-icons": "^5.4.0",
-    "redux": "^5.0.1",
-    "@reduxjs/toolkit": "^2.5.1",
-    "json-diff-kit": "^1.0.31"
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^7.3.0",
+    "@common": "workspace:*"
   },
   "devDependencies": {
-    "@types/react": "^19.0.8",
-    "@types/react-dom": "^19.0.3",
-    "@types/react-redux": "^7.1.34",
-    "@vitejs/plugin-react": "^ 4.3.4",
-    "eslint-plugin-react": "^7.37.4 ",
-    "vite": "^6.1.0"
-  }
+    "@types/node": "^22.13.10",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4 ",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.1"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

@@ -1,5 +1,5 @@
 {
-  "extends": ["../../tsconfig.json"],
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
@@ -17,10 +17,10 @@
       "@hooks": ["./app/hooks"],
       "@screens": ["./app/screens"],
       "@config": ["./app/config"],
-      "@theme": ["app/theme"],
+      "@theme": ["./app/theme"],
       "@store": ["./app/store"]
     }
   },
-  "include": ["./app", "main.tsx"],
+  "include": ["./app"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
