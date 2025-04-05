@@ -1,47 +1,22 @@
 import { Button, Flex, Heading, HStack, Input, Stack, Text, useColorModeValue } from '@chakra-ui/react';
 import { useRef, useState, useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { MessageProps, ServerChatMessage, SocketExceptionData, ClientChatMessage } from '../socket/Chat.types';
 
-// --- Interfaces ---
-interface MessageProps {
-  text: string;
-  // Add 'error' to the possible nicknames
-  nickname: 'user' | 'bot' | 'error' | string;
-}
-
-interface SocketMessage {
-  text: string;
-  // Add other fields if your server sends them
-}
-
-// Interface for the expected exception data from the server
-interface SocketExceptionData {
-  status: 'error'; // Expecting 'error' based on your filter
-  message: string;
-}
-
-// --- Message Component ---
-const Message = ({ text, nickname }: MessageProps) => {
+const Message = ({ text, nickname, time }: MessageProps) => {
   const isUser = nickname === 'user';
   const isBot = nickname === 'bot';
-  // Check if it's an error message
   const isError = nickname === 'error';
-
-  // Determine alignment based on type
   const align = isUser ? 'flex-end' : 'flex-start';
-
-  // Define colors based on role
   const userBg = useColorModeValue('primary.700', 'primary.100');
   const userText = useColorModeValue('primary.100', 'primary.700');
   const botBg = useColorModeValue('green.700', 'green.100');
   const botText = useColorModeValue('green.100', 'green.700');
-  // Define colors for error messages (e.g., red)
   const errorBg = useColorModeValue('red.600', 'red.300');
   const errorText = useColorModeValue('white', 'red.900');
-
-  // Select colors based on nickname
-  const bgColor = isUser ? userBg : isBot ? botBg : isError ? errorBg : botBg; // Default non-user/error to bot style
+  const bgColor = isUser ? userBg : isBot ? botBg : isError ? errorBg : botBg;
   const textColor = isUser ? userText : isBot ? botText : isError ? errorText : botText;
+  const date = new Date(time);
 
   return (
     <Flex
@@ -51,31 +26,35 @@ const Message = ({ text, nickname }: MessageProps) => {
       borderRadius="lg"
       w="fit-content"
       maxW="80%"
-      // Align user messages right, bot and error messages left
       alignSelf={align}
       wordBreak="break-word"
-      boxShadow="sm" // Added subtle shadow for better distinction
+      boxShadow="sm"
     >
-      {/* Optionally add a prefix for errors */}
+      <Text fontSize="xs" opacity={0.7} p={1}>
+        {nickname}
+      </Text>
       {isError && (
         <Text fontWeight="bold" mr={2}>
           ⚠️ Error:
         </Text>
       )}
       <Text>{text}</Text>
+      <Text>{`${date.getHours()}:${date.getMinutes()}`}</Text>
     </Flex>
   );
 };
 
-// --- ChatBox Component ---
 const SERVER_URL = 'http://localhost:3033';
 
 export function ChatBox() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<MessageProps[]>([{ text: 'How may I help you?', nickname: 'bot' }]);
+  const [messageInput, setMessageInput] = useState(''); // Renamed state for clarity
+  const [messages, setMessages] = useState<MessageProps[]>([
+    { text: 'Connecting to chat...', nickname: 'bot', time: Date.now() },
+  ]);
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -87,53 +66,63 @@ export function ChatBox() {
 
   useEffect(() => {
     const newSocket = io(SERVER_URL);
-    setSocket(newSocket);
+    setSocket(newSocket); // Store the socket instance
 
     newSocket.on('connect', () => {
       console.log('Socket.IO Connected:', newSocket.id);
+      setIsConnected(true); // --- Set connected status to true ---
+      // Update initial message or add a connected message
+      setMessages((prev) => {
+        // Remove "Connecting..." message if it exists
+        const filtered = prev.filter((msg) => msg.text !== 'Connecting to chat...');
+        return [...filtered, { text: 'Connected! How may I help you?', nickname: 'bot', time: Date.now() }];
+      });
     });
 
-    // Listen for regular chat messages
-    newSocket.on('chat', (receivedMsg: SocketMessage) => {
+    // Listen for 'chat' messages (matching server emission)
+    newSocket.on('chat', (receivedMsg: ServerChatMessage) => {
       console.log('Message received from server:', receivedMsg);
-      if (receivedMsg && typeof receivedMsg.text === 'string') {
-        setMessages((prev) => [...prev, { text: receivedMsg.text, nickname: 'bot' }]);
+      // Validate the structure based on ServerChatMessage
+      if (receivedMsg && typeof receivedMsg.message === 'string' && typeof receivedMsg.nickname === 'string') {
+        // Map server's 'message' field to UI's 'text' prop
+        setMessages((prev) => [...prev, { text: receivedMsg.message, nickname: 'bot', time: Date.now() }]);
       } else {
         console.warn('Received invalid message format from server:', receivedMsg);
       }
     });
 
-    // --- Add Listener for Server Exceptions ---
     newSocket.on('exception', (errorData: SocketExceptionData) => {
       console.error('Server Exception Received:', errorData);
-      // Check if the received data has the expected structure
       if (errorData && errorData.status === 'error' && typeof errorData.message === 'string') {
-        // Add the error message to the chat display
+        setMessages((prev) => [...prev, { text: errorData.message, nickname: 'error', time: Date.now() }]);
+      } else {
+        console.warn('Received unexpected error format:', errorData);
         setMessages((prev) => [
           ...prev,
-          // Use the 'error' nickname type
-          { text: errorData.message, nickname: 'error' },
+          { text: 'An unknown error occurred on the server.', nickname: 'error', time: Date.now() },
         ]);
-      } else {
-        // Fallback if the error format is unexpected
-        console.warn('Received unexpected error format:', errorData);
-        setMessages((prev) => [...prev, { text: 'An unknown error occurred on the server.', nickname: 'error' }]);
       }
     });
-    // --- End Exception Listener ---
 
     newSocket.on('disconnect', (reason) => {
       console.log('Socket.IO Disconnected:', reason);
-      setSocket(null);
+      setIsConnected(false); // --- Set connected status to false ---
+      setSocket(null); // Clear socket instance
+      // Add a disconnected message
+      setMessages((prev) => [
+        ...prev,
+        { text: `Disconnected: ${reason}. Attempting to reconnect...`, nickname: 'error', time: Date.now() },
+      ]);
     });
 
     newSocket.on('connect_error', (error) => {
       console.error('Socket.IO Connection Error:', error);
-      // Optionally display a connection error message in the chat
-      setMessages((prev) => [
-        ...prev,
-        { text: `Connection failed: ${error.message}. Please check the server.`, nickname: 'error' },
-      ]);
+      setIsConnected(false); // Ensure disconnected state on error
+      // Update initial message or add error message
+      setMessages((prev) => {
+        const filtered = prev.filter((msg) => msg.text !== 'Connecting to chat...');
+        return [...filtered, { text: `Connection failed: ${error.message}.`, nickname: 'error', time: Date.now() }];
+      });
     });
 
     // --- Cleanup function ---
@@ -141,35 +130,45 @@ export function ChatBox() {
       console.log('Disconnecting Socket.IO...');
       newSocket.off('connect');
       newSocket.off('chat');
-      // Make sure to remove the exception listener
       newSocket.off('exception');
       newSocket.off('disconnect');
       newSocket.off('connect_error');
       newSocket.disconnect();
+      setIsConnected(false); // Ensure state is false on unmount
     };
   }, []); // Runs once on mount
 
   const handleSendMessage = () => {
-    const trimmedMessage = message.trim();
-    if (!trimmedMessage || !socket || !socket.connected) {
+    const trimmedMessage = messageInput.trim();
+    if (!trimmedMessage || !socket || !isConnected) {
       return;
     }
 
-    const messageToSend: SocketMessage = { text: trimmedMessage };
+    const messageToSend: ClientChatMessage = {
+      nickname: 'user',
+      message: trimmedMessage, // Use 'message' field
+    };
 
-    setMessages((prev) => [...prev, { text: trimmedMessage, nickname: 'user' }]);
+    // Add user message locally *before* sending
+    // Map our ClientChatMessage 'message' to UI's 'text' prop
+    setMessages((prev) => [...prev, { text: messageToSend.message, nickname: 'user', time: Date.now() }]);
 
+    // --- Emit the correct structure ---
     socket.emit('chat', messageToSend, (ack: Record<string, unknown>) => {
       if (ack?.error) {
         console.error('Message delivery failed:', ack.error);
-        // Optional: Add a local error message if server ACK indicates failure
-        setMessages((prev) => [...prev, { text: `Message failed to send: ${ack.error}`, nickname: 'error' }]);
+        setMessages((prev) => [
+          ...prev,
+          { text: `Message failed to send: ${ack.error}`, nickname: 'error', time: Date.now() },
+        ]);
+        // OPTIONAL: Remove the message that failed? Or mark it as failed?
+        // This depends on desired UX. For now, we just add the error.
       } else {
-        console.log('Message delivered successfully (or no ACK configured):', messageToSend);
+        console.log('Message acknowledged by server (or no ACK configured):', messageToSend);
       }
     });
 
-    setMessage('');
+    setMessageInput(''); // Clear the input field state
     inputRef.current?.focus();
   };
 
@@ -192,7 +191,6 @@ export function ChatBox() {
         overflow="hidden"
         bg={useColorModeValue('white', 'gray.700')} // Background for the chat area itself
       >
-        {/* Header */}
         <HStack
           p={4}
           bg={useColorModeValue('primary.300', 'primary.500')}
@@ -205,7 +203,6 @@ export function ChatBox() {
           </Heading>
         </HStack>
 
-        {/* Message List */}
         <Stack
           px={4}
           py={4}
@@ -219,12 +216,12 @@ export function ChatBox() {
           }
         >
           {messages.map((msg, idx) => (
-            <Message key={`message-${idx}-${msg.nickname}-${msg.text.slice(0, 10)}`} {...msg} /> // More robust key
+            // Use text and nickname for the key, ensuring some uniqueness
+            <Message key={`message-${idx}-${msg.nickname}-${msg.text.slice(0, 10)}`} {...msg} />
           ))}
           <div ref={messagesEndRef} />
         </Stack>
 
-        {/* Input Area */}
         <HStack
           p={4}
           bg={useColorModeValue('gray.100', 'gray.600')} // Slightly different bg for input area
@@ -234,28 +231,28 @@ export function ChatBox() {
         >
           <Input
             ref={inputRef}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            value={messageInput} // Use renamed state
+            onChange={(e) => setMessageInput(e.target.value)} // Update renamed state
             onKeyPress={handleKeyPress}
             bg={useColorModeValue('white', 'gray.700')}
-            placeholder={!socket || !socket.connected ? 'Connecting...' : 'Ask me anything...'}
-            flex={1}
-            isDisabled={!socket || !socket.connected}
-            variant="filled" // Changed variant for slight visual difference
+            // --- Use isConnected state for placeholder and disabled ---
+            placeholder={!isConnected ? 'Connecting...' : 'Ask me anything...'}
+            isDisabled={!isConnected}
+            variant="filled"
             _focus={{
               borderColor: useColorModeValue('primary.500', 'primary.300'),
             }}
           />
           <Button
-            colorScheme="blue" // Keep consistent color scheme unless desired otherwise
-            // Adjusted colors for consistency
+            colorScheme="blue"
             bg={useColorModeValue('primary.500', 'primary.400')}
             color="white"
             _hover={{
               bg: useColorModeValue('primary.600', 'primary.300'),
             }}
             onClick={handleSendMessage}
-            isDisabled={!message.trim() || !socket || !socket.connected}
+            // --- Use isConnected state and check messageInput ---
+            isDisabled={!messageInput.trim() || !isConnected}
           >
             Ask
           </Button>

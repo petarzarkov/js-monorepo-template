@@ -23,7 +23,7 @@ export class EventsGateway {
   ) {
     this.server.emit('chat', {
       ...message,
-      time: new Date().toDateString(),
+      time: Date.now(),
     });
   }
 }
