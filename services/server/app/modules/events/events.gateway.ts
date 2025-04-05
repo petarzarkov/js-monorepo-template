@@ -19,12 +19,8 @@ export class EventsGateway {
 
   @SubscribeMessage('chat')
   @UsePipes(new ValidationPipe())
-  handleMessage(
-    @MessageBody() event: ChatMessage,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    @ConnectedSocket() _client: Socket,
-  ) {
-    this.server.emit('chat', {
+  handleMessage(@MessageBody() event: ChatMessage, @ConnectedSocket() client: Socket) {
+    this.server.to(client.id).emit('chat', {
       message: `you sent me: ${event.message}`,
       nickname: 'bot',
       time: Date.now(),

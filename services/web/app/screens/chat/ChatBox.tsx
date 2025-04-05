@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, Flex, Heading, HStack, Input, Stack, Text, useColorModeValue } from '@chakra-ui/react';
+import { Button, Flex, Heading, HStack, Stack, Text, useColorModeValue, Textarea } from '@chakra-ui/react';
 
 import { useSocket } from '@hooks';
 import Message from './Message';
@@ -7,7 +7,7 @@ import Message from './Message';
 export function ChatBox() {
   const { messages, isConnected, sendMessage } = useSocket();
 
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const [messageInput, setMessageInput] = useState('');
 
@@ -31,7 +31,7 @@ export function ChatBox() {
   };
 
   // Handle Enter key press
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       handleSendMessage();
@@ -39,7 +39,6 @@ export function ChatBox() {
   };
 
   // Define background colors using Chakra hooks
-  const outerBg = useColorModeValue('gray.50', 'gray.800');
   const chatAreaBg = useColorModeValue('white', 'gray.700');
   const headerBg = useColorModeValue('primary.500', 'primary.600'); // Adjusted header color
   const inputAreaBg = useColorModeValue('gray.100', 'gray.600');
@@ -48,7 +47,7 @@ export function ChatBox() {
   const buttonHoverBg = useColorModeValue('primary.600', 'primary.300');
 
   return (
-    <Flex h="100vh" py={12} bg={outerBg}>
+    <Flex h="100vh" py={2}>
       <Flex
         flexDirection="column"
         w="2xl"
@@ -93,9 +92,12 @@ export function ChatBox() {
             },
           }}
         >
+          <Flex flex={1} />
+
           {messages.map((msg, idx) => (
             <Message key={`msg-${idx}-${msg.time}-${msg.nickname}`} {...msg} />
           ))}
+
           <div ref={messagesEndRef} />
         </Stack>
 
@@ -106,16 +108,19 @@ export function ChatBox() {
           borderColor={useColorModeValue('gray.200', 'gray.500')}
           flexShrink={0}
         >
-          <Input
+          <Textarea
             ref={inputRef}
             value={messageInput}
             onChange={(e) => setMessageInput(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyDown}
             bg={inputBg}
             placeholder={!isConnected ? 'Connecting...' : 'Ask me anything...'}
             isDisabled={!isConnected}
             variant="filled"
             _focus={{ borderColor: useColorModeValue('primary.500', 'primary.300') }}
+            overflowY="auto"
+            resize="none"
+            transition="height none"
           />
           <Button
             colorScheme="blue"
