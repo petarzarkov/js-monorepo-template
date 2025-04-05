@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class ChatMessage {
   @IsNotEmpty()
@@ -7,4 +7,17 @@ export class ChatMessage {
   @IsNotEmpty()
   @IsString()
   message: string;
+}
+
+export class ChatMessageResponse {
+  @IsNotEmpty()
+  @IsString()
+  nickname: string;
+  @IsNotEmpty()
+  @IsString()
+  message: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  time: number;
 }

@@ -26,7 +26,7 @@ interface SocketProviderProps {
 }
 
 const DEFAULT_SERVER_URL = 'http://localhost:3033';
-const DEFAULT_USER_NICKNAME = 'User'; // Default nickname if not provided
+const DEFAULT_USER_NICKNAME = 'user';
 
 export const SocketProvider: React.FC<SocketProviderProps> = ({
   children,
@@ -36,8 +36,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
   const [socket, setSocket] = useState<SocketClient | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [messages, setMessages] = useState<MessageProps[]>([
-    // Start with a connecting message
-    { text: 'Connecting to chat...', nickname: 'system', time: Date.now() }, // Use 'system' nickname
+    { text: 'Connecting to chat...', nickname: 'system', time: Date.now() },
   ]);
 
   useEffect(() => {
@@ -128,12 +127,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       newSocket.off('chat', handleChatMessage);
       newSocket.off('exception', handleException);
       newSocket.disconnect();
-      setSocket(null); // Clear socket instance on cleanup
+      setSocket(null);
       setIsConnected(false);
     };
-  }, [serverUrl]); // Re-run effect if serverUrl changes
+  }, [serverUrl]);
 
-  // --- Send Message Function ---
   const sendMessage = useCallback(
     (messageText: string) => {
       const trimmedMessage = messageText.trim();
@@ -143,7 +141,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       }
 
       const messageToSend: ClientChatMessage = {
-        nickname: userNickname, // Use nickname from props/default
+        nickname: userNickname,
         message: trimmedMessage,
       };
 
@@ -169,14 +167,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({
       });
     },
     [socket, isConnected, userNickname],
-  ); // Dependencies for the memoized function
+  );
 
-  // --- Context Value ---
   const contextValue: SocketContextState = {
     messages,
     isConnected,
     sendMessage,
-    // socket // Expose if needed, but usually better not to
   };
 
   return <SocketContext.Provider value={contextValue}>{children}</SocketContext.Provider>;

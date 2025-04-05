@@ -1,7 +1,7 @@
 import { Layout } from './components/Layout';
 import './index.css';
 import { Route, Routes } from 'react-router-dom';
-import ChatBox from './screens/ChatBox';
+import ChatBox from './screens/chat/ChatBox';
 import { NotFound } from './screens/NotFound';
 
 const App = () => {

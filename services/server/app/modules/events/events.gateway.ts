@@ -1,13 +1,16 @@
 import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { Server, ServerOptions, Socket } from 'socket.io';
 import { ChatMessage } from './chat.entity';
 import { WebsocketsExceptionFilter } from './events.filter';
 
-@WebSocketGateway({
+@WebSocketGateway<Partial<ServerOptions>>({
   cors: {
     origin: '*',
   },
+  connectTimeout: 50000,
+  pingInterval: 25000,
+  pingTimeout: 5000,
 })
 @UseFilters(new WebsocketsExceptionFilter())
 export class EventsGateway {
@@ -17,12 +20,13 @@ export class EventsGateway {
   @SubscribeMessage('chat')
   @UsePipes(new ValidationPipe())
   handleMessage(
-    @MessageBody() message: ChatMessage,
+    @MessageBody() event: ChatMessage,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     @ConnectedSocket() _client: Socket,
   ) {
     this.server.emit('chat', {
-      ...message,
+      message: `you sent me: ${event.message}`,
+      nickname: 'bot',
       time: Date.now(),
     });
   }
