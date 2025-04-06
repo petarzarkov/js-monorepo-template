@@ -23,14 +23,14 @@ import { ColorTheme, themes } from '@theme';
 import { BsPaletteFill } from 'react-icons/bs';
 import { useThemeProvider } from '@hooks';
 
-export const NavBar: FC = () => {
+export const NavBar: FC<{ ref: React.RefObject<HTMLDivElement | null> }> = ({ ref }) => {
   const { isOpen: isPalOpen, onOpen: palOnOpen, onClose: palOnClose } = useDisclosure(),
     { theme, setTheme } = useThemeProvider(),
     { toggleColorMode } = useColorMode(),
     { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Box bg={useColorModeValue('primary.200', 'primary.900')} px={4}>
+    <Box bg={useColorModeValue('primary.200', 'primary.900')} px={4} ref={ref}>
       <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
         <IconButton
           size={'md'}
