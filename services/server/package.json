@@ -18,7 +18,7 @@
     "start": "node build/app/main",
     "prebuild": "pnpm run clean",
     "build": "nest build",
-    "postbuild": "rm build/package.json",
+    "postbuild": "rm -f build/package.json",
     "predev": "pnpm run clean",
     "dev": "nest start --watch",
     "mig:gen": "typeorm-ts-node-commonjs migration:generate rename-me -d app/db/typeorm.config.ts app/db/migrations",
